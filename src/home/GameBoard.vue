@@ -15,6 +15,7 @@
     </div>
     <div class="toolbar">
       <button class="btn btn-lg btn-secondary"
+              :disabled="freeze && !gameOver"
               @click="reset()">{{started ? 'Restart ' : 'Start '}} Game
       </button>
       <h1 class="winphrase" v-if="winPhrase">{{winPhrase}}</h1>
@@ -38,6 +39,7 @@
         freeze: false,
         started: false,
         winPhrase: '',
+        gameOver: false
       };
     },
     created() {
@@ -55,6 +57,7 @@
             if (!win) {
               this.react(column, index);
             } else {
+              this.gameOver = true;
               this.winPhrase = 'You win!';
             }
           });
@@ -68,6 +71,7 @@
             return this.validate(owners.opponent)
           })
           .then((win) => {
+            this.gameOver = win;
             this.freeze = win;
             this.winPhrase = win ? 'You Lose!' : '';
           });
@@ -120,8 +124,9 @@
       },
       reset() {
         this.started = true;
-        this.board = new Board(this.boardWidth);
         this.freeze = false;
+        this.gameOver = false;
+        this.board = new Board(this.boardWidth);
         this.winPhrase = '';
       },
       animate(colIndex, firstEmptyCell) {
